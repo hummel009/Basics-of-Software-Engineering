@@ -1,7 +1,7 @@
 package com.github.hummel.bose;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatGitHubDarkIJTheme;
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTGitHubDarkIJTheme;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +11,7 @@ public class Main {
 		FlatLightLaf.setup();
 		EventQueue.invokeLater(() -> {
 			try {
-				UIManager.setLookAndFeel(new FlatGitHubDarkIJTheme());
+				UIManager.setLookAndFeel(new FlatMTGitHubDarkIJTheme());
 				var frame = new Calculator();
 				frame.setVisible(true);
 			} catch (Exception e) {
