@@ -29,6 +29,8 @@ public class Calculator extends JFrame {
 		setTitle("Hummel009's Calculator");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+		Locale.setDefault(Locale.US);
+
 		panel.setLayout(new GridLayout(7, 4));
 
 		registerButton("C", "C", false);
@@ -221,6 +223,7 @@ public class Calculator extends JFrame {
 			var output = calculate();
 			var result = new DecimalFormat("#.###############").format(output);
 			outputField.setText(buttons.get(buttonName).getText() + '(' + outputField.getText() + ')' + '=' + result);
+			operation = Operation.FINISHED;
 		} catch (Exception e) {
 			outputField.setText("");
 		}
