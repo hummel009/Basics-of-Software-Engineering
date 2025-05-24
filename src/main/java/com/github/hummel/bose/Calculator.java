@@ -13,12 +13,12 @@ public class Calculator extends JFrame {
 
 	private final Map<String, Supplier<Runnable>> func = new HashMap<>();
 
-	private final Map<Operation, String> opeOperand = new EnumMap<>(Operation.class);
+	private final Map<Operation, String> oneOperand = new EnumMap<>(Operation.class);
 	private final Map<Operation, String> twoOperands = new EnumMap<>(Operation.class);
 
 	private final Engine engine = new Engine();
 	private final JLabel outputField = new JLabel();
-	private Operation operation;
+	private Operation operation = Operation.NULL;
 	private double input1;
 	private double input2;
 	private int notInclude;
@@ -33,86 +33,80 @@ public class Calculator extends JFrame {
 
 		panel.setLayout(new GridLayout(7, 4));
 
-		registerButton("C", "C", false);
-		registerButton("e", "e", false);
-		registerButton("π", "π", false);
-		registerButton("÷", "÷", false);
+		registerButton("C", false);
+		registerButton("e", false);
+		registerButton("π", false);
+		registerButton("÷", false);
 
-		registerButton("7", "7", false);
-		registerButton("8", "8", false);
-		registerButton("9", "9", false);
-		registerButton("×", "×", false);
+		registerButton("7", false);
+		registerButton("8", false);
+		registerButton("9", false);
+		registerButton("×", false);
 
-		registerButton("4", "4", false);
-		registerButton("5", "5", false);
-		registerButton("6", "6", false);
-		registerButton("-", "-", false);
+		registerButton("4", false);
+		registerButton("5", false);
+		registerButton("6", false);
+		registerButton("-", false);
 
-		registerButton("1", "1", false);
-		registerButton("2", "2", false);
-		registerButton("3", "3", false);
-		registerButton("+", "+", false);
+		registerButton("1", false);
+		registerButton("2", false);
+		registerButton("3", false);
+		registerButton("+", false);
 
-		registerButton("%", "%", false);
-		registerButton("0", "0", false);
-		registerButton(".", ".", false);
-		registerButton("=", "=", false);
+		registerButton("%", false);
+		registerButton("0", false);
+		registerButton(".", false);
+		registerButton("=", false);
 
-		registerButton("√", "√", false);
-		registerButton("^", "^", false);
-		registerButton("^2", "^2", false);
-		registerButton("^3", "^3", false);
+		registerButton("√", false);
+		registerButton("^", false);
+		registerButton("^2", false);
+		registerButton("^3", false);
 
-		registerButton("log", "log", true);
-		registerButton("sin°", "sin°", true);
-		registerButton("cos°", "cos°", true);
-		registerButton("tg°", "tg°", true);
-		registerButton("ctg°", "ctg°", true);
-		registerButton("arcsin", "arcsin", true);
-		registerButton("arccos", "arccos", true);
-		registerButton("arctg", "arctg", true);
-		registerButton("arcctg", "arcctg", true);
-		registerButton("10^", "10^", true);
-		registerButton("lg", "lg", true);
-		registerButton("ln", "ln", true);
-		registerButton("ch", "ch", true);
-		registerButton("sh", "sh", true);
-		registerButton("th", "th", true);
-		registerButton("cth", "cth", true);
+		registerButton("log", true);
+		registerButton("sin°", true);
+		registerButton("cos°", true);
+		registerButton("tg°", true);
+		registerButton("ctg°", true);
+		registerButton("arcsin", true);
+		registerButton("arccos", true);
+		registerButton("arctg", true);
+		registerButton("arcctg", true);
+		registerButton("10^", true);
+		registerButton("lg", true);
+		registerButton("ln", true);
+		registerButton("ch", true);
+		registerButton("sh", true);
+		registerButton("th", true);
+		registerButton("cth", true);
 
-		registerButton("1/x", "1/x", false);
-		registerButton("n!", "n!", false);
-		registerButton("n!!", "n!!", false);
+		registerButton("1/x", false);
+		registerButton("n!", false);
+		registerButton("n!!", false);
 
-		registerButton("⚙", "⚙", false);
+		registerButton("⚙", false);
 
-		outputField.setFont(outputField.getFont().deriveFont(20.0f));
-		outputField.setHorizontalAlignment(SwingConstants.RIGHT);
-		outputField.setPreferredSize(new Dimension(outputField.getWidth(), outputField.getFontMetrics(outputField.getFont()).getHeight()));
-
-		operation = Operation.NULL;
-
-		opeOperand.put(Operation.FACTORIAL, "n!");
-		opeOperand.put(Operation.DOUBLEFACT, "n!!");
-		opeOperand.put(Operation.SQRT, "√");
-		opeOperand.put(Operation.SIN, "sin°");
-		opeOperand.put(Operation.COS, "cos°");
-		opeOperand.put(Operation.TG, "tg°");
-		opeOperand.put(Operation.CTG, "ctg°");
-		opeOperand.put(Operation.ARCSIN, "arcsin");
-		opeOperand.put(Operation.ARCCOS, "arccos");
-		opeOperand.put(Operation.ARCTG, "arctg");
-		opeOperand.put(Operation.ARCCTG, "arcctg");
-		opeOperand.put(Operation.SQARE, "^2");
-		opeOperand.put(Operation.CUBE, "^3");
-		opeOperand.put(Operation.LG, "lg");
-		opeOperand.put(Operation.LN, "ln");
-		opeOperand.put(Operation.CH, "ch");
-		opeOperand.put(Operation.SH, "sh");
-		opeOperand.put(Operation.TH, "th");
-		opeOperand.put(Operation.CTH, "cth");
-		opeOperand.put(Operation.TEN, "10^");
-		opeOperand.put(Operation.BACK, "1/x");
+		oneOperand.put(Operation.FACTORIAL, "n!");
+		oneOperand.put(Operation.DOUBLEFACT, "n!!");
+		oneOperand.put(Operation.SQRT, "√");
+		oneOperand.put(Operation.SIN, "sin°");
+		oneOperand.put(Operation.COS, "cos°");
+		oneOperand.put(Operation.TG, "tg°");
+		oneOperand.put(Operation.CTG, "ctg°");
+		oneOperand.put(Operation.ARCSIN, "arcsin");
+		oneOperand.put(Operation.ARCCOS, "arccos");
+		oneOperand.put(Operation.ARCTG, "arctg");
+		oneOperand.put(Operation.ARCCTG, "arcctg");
+		oneOperand.put(Operation.SQARE, "^2");
+		oneOperand.put(Operation.CUBE, "^3");
+		oneOperand.put(Operation.LG, "lg");
+		oneOperand.put(Operation.LN, "ln");
+		oneOperand.put(Operation.CH, "ch");
+		oneOperand.put(Operation.SH, "sh");
+		oneOperand.put(Operation.TH, "th");
+		oneOperand.put(Operation.CTH, "cth");
+		oneOperand.put(Operation.TEN, "10^");
+		oneOperand.put(Operation.BACK, "1/x");
 
 		twoOperands.put(Operation.PLUS, "+");
 		twoOperands.put(Operation.MINUS, "-");
@@ -158,6 +152,10 @@ public class Calculator extends JFrame {
 		func.put("e", () -> () -> outputField.setText("2.718281828459045"));
 		func.put("π", () -> () -> outputField.setText("3.141592653589793"));
 
+		outputField.setFont(outputField.getFont().deriveFont(20.0f));
+		outputField.setHorizontalAlignment(SwingConstants.RIGHT);
+		outputField.setPreferredSize(new Dimension(outputField.getWidth(), outputField.getFontMetrics(outputField.getFont()).getHeight()));
+
 		add(outputField, BorderLayout.PAGE_START);
 		add(panel, BorderLayout.CENTER);
 		setSize(450, 750);
@@ -186,7 +184,7 @@ public class Calculator extends JFrame {
 	public void selectButton(String buttonName) {
 		var skip = false;
 
-		for (var entry : opeOperand.entrySet()) {
+		for (var entry : oneOperand.entrySet()) {
 			if (buttonName.equals(entry.getValue())) {
 				oneNumber(entry.getKey(), entry.getValue());
 				skip = true;
@@ -241,11 +239,11 @@ public class Calculator extends JFrame {
 		}
 	}
 
-	private void registerButton(String name, String text, boolean hidden) {
+	private void registerButton(String name, boolean hidden) {
 		var button = new JButton();
 		button.setFont(button.getFont().deriveFont(20.0f));
 		button.addActionListener(event -> selectButton(((AbstractButton) event.getSource()).getText()));
-		button.setText(text);
+		button.setText(name);
 		if (hidden) {
 			buttonsExtendedMode.add(button);
 		} else {
