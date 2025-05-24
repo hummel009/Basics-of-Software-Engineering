@@ -4,26 +4,27 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.function.Supplier;
 
 public class Calculator extends JFrame {
 	private final Map<String, JButton> buttons = new HashMap<>();
 	private final Collection<JButton> buttonsExtendedSet = new ArrayList<>();
+
+	private final Map<String, Runnable> customFunc = new HashMap<>();
+	private final Map<String, Operation> oneOpFunc = new HashMap<>();
+	private final Map<String, Operation> twoOpFunc = new HashMap<>();
+
 	private final JPanel panel = new JPanel();
-
-	private final Map<String, Supplier<Runnable>> func = new HashMap<>();
-
-	private final Map<Operation, String> oneOperand = new EnumMap<>(Operation.class);
-	private final Map<Operation, String> twoOperands = new EnumMap<>(Operation.class);
+	private final JLabel outputField = new JLabel();
 
 	private final Engine engine = new Engine();
-	private final JLabel outputField = new JLabel();
+
 	private Operation operation = Operation.NULL;
-	private double input1;
-	private double input2;
-	private int notInclude;
+	private double operand1;
+	private double operand2;
 
 	private boolean extended;
+
+	private int notInclude;
 
 	public Calculator() {
 		setTitle("Hummel009's Calculator");
@@ -33,35 +34,41 @@ public class Calculator extends JFrame {
 
 		panel.setLayout(new GridLayout(7, 4));
 
-		registerButton("C", false);
-		registerButton("e", false);
-		registerButton("π", false);
-		registerButton("÷", false);
+		registerButton("C");
+		registerButton("e");
+		registerButton("π");
+		registerButton("÷");
 
-		registerButton("7", false);
-		registerButton("8", false);
-		registerButton("9", false);
-		registerButton("×", false);
+		registerButton("7");
+		registerButton("8");
+		registerButton("9");
+		registerButton("×");
 
-		registerButton("4", false);
-		registerButton("5", false);
-		registerButton("6", false);
-		registerButton("-", false);
+		registerButton("4");
+		registerButton("5");
+		registerButton("6");
+		registerButton("-");
 
-		registerButton("1", false);
-		registerButton("2", false);
-		registerButton("3", false);
-		registerButton("+", false);
+		registerButton("1");
+		registerButton("2");
+		registerButton("3");
+		registerButton("+");
 
-		registerButton("%", false);
-		registerButton("0", false);
-		registerButton(".", false);
-		registerButton("=", false);
+		registerButton("%");
+		registerButton("0");
+		registerButton(".");
+		registerButton("=");
 
-		registerButton("√", false);
-		registerButton("^", false);
-		registerButton("^2", false);
-		registerButton("^3", false);
+		registerButton("√");
+		registerButton("^");
+		registerButton("^2");
+		registerButton("^3");
+
+		registerButton("1/");
+		registerButton("n!");
+		registerButton("n!!");
+
+		registerButton("⚙");
 
 		registerButton("log", true);
 		registerButton("sin°", true);
@@ -80,43 +87,37 @@ public class Calculator extends JFrame {
 		registerButton("th", true);
 		registerButton("cth", true);
 
-		registerButton("1/x", false);
-		registerButton("n!", false);
-		registerButton("n!!", false);
+		oneOpFunc.put("n!", Operation.FACTORIAL);
+		oneOpFunc.put("n!!", Operation.DOUBLEFACT);
+		oneOpFunc.put("√", Operation.SQRT);
+		oneOpFunc.put("sin°", Operation.SIN);
+		oneOpFunc.put("cos°", Operation.COS);
+		oneOpFunc.put("tg°", Operation.TG);
+		oneOpFunc.put("ctg°", Operation.CTG);
+		oneOpFunc.put("arcsin", Operation.ARCSIN);
+		oneOpFunc.put("arccos", Operation.ARCCOS);
+		oneOpFunc.put("arctg", Operation.ARCTG);
+		oneOpFunc.put("arcctg", Operation.ARCCTG);
+		oneOpFunc.put("^2", Operation.SQARE);
+		oneOpFunc.put("^3", Operation.CUBE);
+		oneOpFunc.put("lg", Operation.LG);
+		oneOpFunc.put("ln", Operation.LN);
+		oneOpFunc.put("ch", Operation.CH);
+		oneOpFunc.put("sh", Operation.SH);
+		oneOpFunc.put("th", Operation.TH);
+		oneOpFunc.put("cth", Operation.CTH);
+		oneOpFunc.put("10^", Operation.TEN);
+		oneOpFunc.put("1/x", Operation.BACK);
 
-		registerButton("⚙", false);
+		twoOpFunc.put("+", Operation.PLUS);
+		twoOpFunc.put("-", Operation.MINUS);
+		twoOpFunc.put("×", Operation.MULTIPLE);
+		twoOpFunc.put("log", Operation.LOGARITHM);
+		twoOpFunc.put("^", Operation.POWER);
+		twoOpFunc.put("÷", Operation.DIVIDE);
+		twoOpFunc.put("%", Operation.PERCENT);
 
-		oneOperand.put(Operation.FACTORIAL, "n!");
-		oneOperand.put(Operation.DOUBLEFACT, "n!!");
-		oneOperand.put(Operation.SQRT, "√");
-		oneOperand.put(Operation.SIN, "sin°");
-		oneOperand.put(Operation.COS, "cos°");
-		oneOperand.put(Operation.TG, "tg°");
-		oneOperand.put(Operation.CTG, "ctg°");
-		oneOperand.put(Operation.ARCSIN, "arcsin");
-		oneOperand.put(Operation.ARCCOS, "arccos");
-		oneOperand.put(Operation.ARCTG, "arctg");
-		oneOperand.put(Operation.ARCCTG, "arcctg");
-		oneOperand.put(Operation.SQARE, "^2");
-		oneOperand.put(Operation.CUBE, "^3");
-		oneOperand.put(Operation.LG, "lg");
-		oneOperand.put(Operation.LN, "ln");
-		oneOperand.put(Operation.CH, "ch");
-		oneOperand.put(Operation.SH, "sh");
-		oneOperand.put(Operation.TH, "th");
-		oneOperand.put(Operation.CTH, "cth");
-		oneOperand.put(Operation.TEN, "10^");
-		oneOperand.put(Operation.BACK, "1/x");
-
-		twoOperands.put(Operation.PLUS, "+");
-		twoOperands.put(Operation.MINUS, "-");
-		twoOperands.put(Operation.MULTIPLE, "×");
-		twoOperands.put(Operation.LOGARITHM, "log");
-		twoOperands.put(Operation.POWER, "^");
-		twoOperands.put(Operation.DIVIDE, "÷");
-		twoOperands.put(Operation.PERCENT, "%");
-
-		func.put("⚙", () -> () -> {
+		customFunc.put("⚙", () -> {
 			if (extended) {
 				extended = false;
 				panel.setLayout(new GridLayout(7, 4));
@@ -134,23 +135,25 @@ public class Calculator extends JFrame {
 			panel.revalidate();
 			panel.repaint();
 		});
-		func.put("C", () -> () -> {
-			input1 = input2 = 0;
+		customFunc.put("C", () -> {
+			operand1 = 0;
+			operand2 = 0;
+			operation = Operation.NULL;
 			outputField.setText("");
 		});
-		func.put("=", () -> () -> {
+		customFunc.put("=", () -> {
 			try {
-				input2 = Double.parseDouble(outputField.getText().substring(notInclude));
-				var output = engine.getCalculationResult(operation, input1, input2);
+				operand2 = Double.parseDouble(outputField.getText().substring(notInclude));
+				var output = engine.getCalculationResult(operation, operand1, operand2);
 				var result = new DecimalFormat("#.###############").format(output);
 				outputField.setText(outputField.getText() + '=' + result);
-				operation = Operation.FINISHED;
+				operation = Operation.FINISH;
 			} catch (Exception e) {
 				outputField.setText("");
 			}
 		});
-		func.put("e", () -> () -> outputField.setText("2.718281828459045"));
-		func.put("π", () -> () -> outputField.setText("3.141592653589793"));
+		customFunc.put("e", () -> outputField.setText("2.718281828459045"));
+		customFunc.put("π", () -> outputField.setText("3.141592653589793"));
 
 		outputField.setFont(outputField.getFont().deriveFont(20.0f));
 		outputField.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -160,6 +163,10 @@ public class Calculator extends JFrame {
 		add(panel, BorderLayout.CENTER);
 		setSize(450, 750);
 		setLocationRelativeTo(null);
+	}
+
+	private void registerButton(String name) {
+		registerButton(name, false);
 	}
 
 	private void registerButton(String name, boolean extendedSet) {
@@ -176,37 +183,19 @@ public class Calculator extends JFrame {
 	}
 
 	public void selectButton(String buttonName) {
-		var skip = false;
-
-		for (var entry : oneOperand.entrySet()) {
-			if (buttonName.equals(entry.getValue())) {
-				oneNumber(entry.getKey(), entry.getValue());
-				skip = true;
-				break;
+		if (outputField.getText().isEmpty()) {
+			if (buttonName.matches("[0-9]")) {
+				outputField.setText(outputField.getText() + buttonName);
 			}
-		}
-
-		if (!skip) {
-			for (var entry : twoOperands.entrySet()) {
-				if (buttonName.equals(entry.getValue())) {
-					twoNumbers(entry.getKey(), entry.getValue());
-					skip = true;
-					break;
-				}
-			}
-		}
-
-		if (!skip) {
-			var func = this.func.get(buttonName);
-			if (func != null) {
-				func.get().run();
-				skip = true;
-			}
-		}
-
-		if (!skip) {
-			if (buttonName.matches("[0-9.]")) {
-				if (operation == Operation.FINISHED) {
+		} else {
+			if (oneOpFunc.containsKey(buttonName)) {
+				oneNumber(oneOpFunc.get(buttonName), buttonName);
+			} else if (twoOpFunc.containsKey(buttonName)) {
+				twoNumbers(twoOpFunc.get(buttonName), buttonName);
+			} else if (customFunc.containsKey(buttonName)) {
+				customFunc.get(buttonName).run();
+			} else {
+				if (operation == Operation.FINISH) {
 					outputField.setText(buttonName);
 					operation = Operation.NULL;
 				} else {
@@ -224,12 +213,12 @@ public class Calculator extends JFrame {
 			outputField.setText(outputText);
 		}
 		try {
-			input1 = Double.parseDouble(outputField.getText());
+			operand1 = Double.parseDouble(outputField.getText());
 			operation = op;
-			var output = engine.getCalculationResult(operation, input1, input2);
+			var output = engine.getCalculationResult(operation, operand1, operand2);
 			var result = new DecimalFormat("#.###############").format(output);
 			outputField.setText(buttons.get(buttonName).getText() + '(' + outputField.getText() + ')' + '=' + result);
-			operation = Operation.FINISHED;
+			operation = Operation.FINISH;
 		} catch (Exception e) {
 			outputField.setText("");
 		}
@@ -244,16 +233,12 @@ public class Calculator extends JFrame {
 		}
 		try {
 			notInclude = outputField.getText().length() + buttonName.length();
-			input1 = Double.parseDouble(outputField.getText());
+			operand1 = Double.parseDouble(outputField.getText());
 			operation = op;
 			outputField.setText(outputField.getText() + buttonName);
 		} catch (Exception e) {
 			outputField.setText("");
 		}
-	}
-
-	public enum Operation {
-		NULL, FINISHED, ARCCOS, ARCCTG, ARCSIN, ARCTG, COS, CTG, DIVIDE, FACTORIAL, LOGARITHM, MINUS, MULTIPLE, PERCENT, PLUS, POWER, SIN, SQRT, TG, SQARE, CUBE, LG, LN, CH, SH, TH, CTH, TEN, BACK, DOUBLEFACT
 	}
 
 	public boolean isExtended() {
