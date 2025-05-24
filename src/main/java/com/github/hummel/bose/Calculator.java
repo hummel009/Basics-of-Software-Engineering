@@ -11,12 +11,12 @@ public class Calculator extends JFrame {
 	private final Collection<JButton> buttonsExtendedMode = new ArrayList<>();
 	private final JPanel panel = new JPanel();
 
-	private final Map<Operation, Supplier<Double>> engine = new EnumMap<>(Operation.class);
 	private final Map<String, Supplier<Runnable>> func = new HashMap<>();
 
 	private final Map<Operation, String> opeOperand = new EnumMap<>(Operation.class);
 	private final Map<Operation, String> twoOperands = new EnumMap<>(Operation.class);
 
+	private final Engine engine = new Engine();
 	private final JLabel outputField = new JLabel();
 	private Operation operation;
 	private double input1;
@@ -92,48 +92,6 @@ public class Calculator extends JFrame {
 
 		operation = Operation.NULL;
 
-		engine.put(Operation.PLUS, () -> input1 + input2);
-		engine.put(Operation.MINUS, () -> input1 - input2);
-		engine.put(Operation.MULTIPLE, () -> input1 * input2);
-		engine.put(Operation.ARCSIN, () -> StrictMath.asin(input1));
-		engine.put(Operation.ARCCOS, () -> StrictMath.acos(input1));
-		engine.put(Operation.ARCTG, () -> StrictMath.atan(input1));
-		engine.put(Operation.ARCCTG, () -> 1 / StrictMath.atan(input1));
-		engine.put(Operation.SIN, () -> StrictMath.sin(StrictMath.toRadians(input1)));
-		engine.put(Operation.COS, () -> StrictMath.cos(StrictMath.toRadians(input1)));
-		engine.put(Operation.TG, () -> StrictMath.tan(StrictMath.toRadians(input1)));
-		engine.put(Operation.CTG, () -> 1 / StrictMath.tan(StrictMath.toRadians(input1)));
-		engine.put(Operation.SQRT, () -> StrictMath.sqrt(input1));
-		engine.put(Operation.LOGARITHM, () -> StrictMath.log10(input1) / StrictMath.log10(input2));
-		engine.put(Operation.POWER, () -> StrictMath.pow(input1, input2));
-		engine.put(Operation.DIVIDE, () -> input1 / input2);
-		engine.put(Operation.PERCENT, () -> input2 * input1 / 100);
-		engine.put(Operation.SQARE, () -> input1 * input1);
-		engine.put(Operation.CUBE, () -> StrictMath.pow(input1, 3));
-		engine.put(Operation.LG, () -> StrictMath.log10(input1));
-		engine.put(Operation.LN, () -> StrictMath.log(input1));
-		engine.put(Operation.CH, () -> (StrictMath.pow(2.7183, input1) + StrictMath.pow(2.7183, -1 * input1)) / 2);
-		engine.put(Operation.SH, () -> (StrictMath.pow(2.7183, input1) - StrictMath.pow(2.7183, -1 * input1)) / 2);
-		engine.put(Operation.TH, () -> (StrictMath.pow(2.7183, input1) - StrictMath.pow(2.7183, -1 * input1)) / (StrictMath.pow(2.7183, input1) + StrictMath.pow(2.7183, -1 * input1)));
-		engine.put(Operation.CTH, () -> (StrictMath.pow(2.7183, input1) + StrictMath.pow(2.7183, -1 * input1)) / (StrictMath.pow(2.7183, input1) - StrictMath.pow(2.7183, -1 * input1)));
-		engine.put(Operation.TEN, () -> StrictMath.pow(10, input1));
-		engine.put(Operation.BACK, () -> 1 / input1);
-		engine.put(Operation.NULL, () -> input2);
-		engine.put(Operation.DOUBLEFACT, () -> {
-			var result = 1L;
-			for (var k = StrictMath.round(input1); k > 0; k -= 2) {
-				result *= k;
-			}
-			return (double) result;
-		});
-		engine.put(Operation.FACTORIAL, () -> {
-			var result = 1L;
-			for (var k = StrictMath.round(input1); k > 0; k -= 1) {
-				result *= k;
-			}
-			return (double) result;
-		});
-
 		opeOperand.put(Operation.FACTORIAL, "n!");
 		opeOperand.put(Operation.DOUBLEFACT, "n!!");
 		opeOperand.put(Operation.SQRT, "√");
@@ -189,7 +147,7 @@ public class Calculator extends JFrame {
 		func.put("=", () -> () -> {
 			try {
 				input2 = Double.parseDouble(outputField.getText().substring(notInclude));
-				var output = calculate();
+				var output = engine.getCalculationResult(operation, input1, input2);
 				var result = new DecimalFormat("#.###############").format(output);
 				outputField.setText(outputField.getText() + '=' + result);
 				operation = Operation.FINISHED;
@@ -206,10 +164,6 @@ public class Calculator extends JFrame {
 		setLocationRelativeTo(null);
 	}
 
-	private double calculate() {
-		return engine.get(operation).get();
-	}
-
 	private void oneNumber(Operation op, String buttonName) {
 		var outputText = outputField.getText();
 		var equalsIndex = outputText.indexOf('=');
@@ -220,7 +174,7 @@ public class Calculator extends JFrame {
 		try {
 			input1 = Double.parseDouble(outputField.getText());
 			operation = op;
-			var output = calculate();
+			var output = engine.getCalculationResult(operation, input1, input2);
 			var result = new DecimalFormat("#.###############").format(output);
 			outputField.setText(buttons.get(buttonName).getText() + '(' + outputField.getText() + ')' + '=' + result);
 			operation = Operation.FINISHED;
