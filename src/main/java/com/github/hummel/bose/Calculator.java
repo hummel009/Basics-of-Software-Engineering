@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public class Calculator extends JFrame {
 	private final Map<String, JButton> buttons = new HashMap<>();
-	private final Collection<JButton> buttonsExtendedMode = new ArrayList<>();
+	private final Collection<JButton> buttonsExtendedSet = new ArrayList<>();
 	private final JPanel panel = new JPanel();
 
 	private final Map<String, Supplier<Runnable>> func = new HashMap<>();
@@ -122,13 +122,13 @@ public class Calculator extends JFrame {
 				panel.setLayout(new GridLayout(7, 4));
 				panel.remove(buttons.get("⚙"));
 				//noinspection StreamToLoop
-				buttonsExtendedMode.forEach(panel::remove);
+				buttonsExtendedSet.forEach(panel::remove);
 			} else {
 				extended = true;
 				panel.setLayout(new GridLayout(11, 4));
 				panel.remove(buttons.get("⚙"));
 				//noinspection StreamToLoop
-				buttonsExtendedMode.forEach(panel::add);
+				buttonsExtendedSet.forEach(panel::add);
 			}
 			panel.add(buttons.get("⚙"));
 			panel.revalidate();
@@ -162,23 +162,17 @@ public class Calculator extends JFrame {
 		setLocationRelativeTo(null);
 	}
 
-	private void oneNumber(Operation op, String buttonName) {
-		var outputText = outputField.getText();
-		var equalsIndex = outputText.indexOf('=');
-		if (equalsIndex != -1) {
-			outputText = outputText.substring(equalsIndex + 1).trim();
-			outputField.setText(outputText);
+	private void registerButton(String name, boolean extendedSet) {
+		var button = new JButton();
+		button.setFont(button.getFont().deriveFont(20.0f));
+		button.addActionListener(event -> selectButton(((AbstractButton) event.getSource()).getText()));
+		button.setText(name);
+		if (extendedSet) {
+			buttonsExtendedSet.add(button);
+		} else {
+			panel.add(button);
 		}
-		try {
-			input1 = Double.parseDouble(outputField.getText());
-			operation = op;
-			var output = engine.getCalculationResult(operation, input1, input2);
-			var result = new DecimalFormat("#.###############").format(output);
-			outputField.setText(buttons.get(buttonName).getText() + '(' + outputField.getText() + ')' + '=' + result);
-			operation = Operation.FINISHED;
-		} catch (Exception e) {
-			outputField.setText("");
-		}
+		buttons.put(name, button);
 	}
 
 	public void selectButton(String buttonName) {
@@ -222,6 +216,25 @@ public class Calculator extends JFrame {
 		}
 	}
 
+	private void oneNumber(Operation op, String buttonName) {
+		var outputText = outputField.getText();
+		var equalsIndex = outputText.indexOf('=');
+		if (equalsIndex != -1) {
+			outputText = outputText.substring(equalsIndex + 1).trim();
+			outputField.setText(outputText);
+		}
+		try {
+			input1 = Double.parseDouble(outputField.getText());
+			operation = op;
+			var output = engine.getCalculationResult(operation, input1, input2);
+			var result = new DecimalFormat("#.###############").format(output);
+			outputField.setText(buttons.get(buttonName).getText() + '(' + outputField.getText() + ')' + '=' + result);
+			operation = Operation.FINISHED;
+		} catch (Exception e) {
+			outputField.setText("");
+		}
+	}
+
 	private void twoNumbers(Operation op, CharSequence buttonName) {
 		var outputText = outputField.getText();
 		var equalsIndex = outputText.indexOf('=');
@@ -237,19 +250,6 @@ public class Calculator extends JFrame {
 		} catch (Exception e) {
 			outputField.setText("");
 		}
-	}
-
-	private void registerButton(String name, boolean hidden) {
-		var button = new JButton();
-		button.setFont(button.getFont().deriveFont(20.0f));
-		button.addActionListener(event -> selectButton(((AbstractButton) event.getSource()).getText()));
-		button.setText(name);
-		if (hidden) {
-			buttonsExtendedMode.add(button);
-		} else {
-			panel.add(button);
-		}
-		buttons.put(name, button);
 	}
 
 	public enum Operation {
