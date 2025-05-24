@@ -161,7 +161,7 @@ public class Calculator extends JFrame {
 
 		add(outputField, BorderLayout.PAGE_START);
 		add(panel, BorderLayout.CENTER);
-		setSize(450, 750);
+		setSize(400, 700);
 		setLocationRelativeTo(null);
 	}
 
@@ -183,24 +183,18 @@ public class Calculator extends JFrame {
 	}
 
 	public void selectButton(String buttonName) {
-		if (outputField.getText().isEmpty()) {
-			if (buttonName.matches("[0-9]")) {
-				outputField.setText(outputField.getText() + buttonName);
-			}
+		if (oneOpFunc.containsKey(buttonName)) {
+			oneNumber(oneOpFunc.get(buttonName), buttonName);
+		} else if (twoOpFunc.containsKey(buttonName)) {
+			twoNumbers(twoOpFunc.get(buttonName), buttonName);
+		} else if (customFunc.containsKey(buttonName)) {
+			customFunc.get(buttonName).run();
 		} else {
-			if (oneOpFunc.containsKey(buttonName)) {
-				oneNumber(oneOpFunc.get(buttonName), buttonName);
-			} else if (twoOpFunc.containsKey(buttonName)) {
-				twoNumbers(twoOpFunc.get(buttonName), buttonName);
-			} else if (customFunc.containsKey(buttonName)) {
-				customFunc.get(buttonName).run();
+			if (operation == Operation.FINISH) {
+				outputField.setText(buttonName);
+				operation = Operation.NULL;
 			} else {
-				if (operation == Operation.FINISH) {
-					outputField.setText(buttonName);
-					operation = Operation.NULL;
-				} else {
-					outputField.setText(outputField.getText() + buttonName);
-				}
+				outputField.setText(outputField.getText() + buttonName);
 			}
 		}
 	}
