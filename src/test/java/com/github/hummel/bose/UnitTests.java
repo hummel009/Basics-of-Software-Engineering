@@ -1,318 +1,86 @@
 package com.github.hummel.bose;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 class UnitTests {
-	private Calculator calculator;
+	private static void testOperation(Calculator calculator, String input1, String operation, String input2, String equals, String expected) {
+		calculator.selectButton("C");
 
-	@Test
-	void testSARCCOS() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[0]);
-		calculator.selectButton(Calculator.BUTTONS[10]);
-		calculator.selectButton(Calculator.BUTTONS[5]);
-		calculator.selectButton(Calculator.BUTTONS[29]);
-		assertEquals(StrictMath.acos(0.5), calculator.getOutput());
+		for (var c : input1.toCharArray()) {
+			var buttonName = String.valueOf(c);
+			calculator.selectButton(buttonName);
+		}
+
+		calculator.selectButton(operation);
+
+		if (input2 != null) {
+			for (var c : input2.toCharArray()) {
+				var buttonName = String.valueOf(c);
+				calculator.selectButton(buttonName);
+			}
+		}
+
+		if (equals != null) {
+			calculator.selectButton(equals);
+		}
+
+		assertEquals(expected, calculator.getOutputText());
 	}
 
 	@Test
-	void testSARCCTG() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[1]);
-		calculator.selectButton(Calculator.BUTTONS[31]);
-		assertEquals(1.2732395447351628, calculator.getOutput());
-	}
+	void testAllOperations() {
+		var calculator = new Calculator();
 
-	@Test
-	void testSARCSIN() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[0]);
-		calculator.selectButton(Calculator.BUTTONS[10]);
-		calculator.selectButton(Calculator.BUTTONS[5]);
-		calculator.selectButton(Calculator.BUTTONS[28]);
-		assertEquals(StrictMath.asin(0.5), calculator.getOutput());
-	}
+		calculator.selectButton("1");
+		calculator.selectButton("2");
+		calculator.selectButton("3");
+		calculator.selectButton("C");
+		assertEquals("", calculator.getOutputText());
 
-	@Test
-	void testSARCTG() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[1]);
-		calculator.selectButton(Calculator.BUTTONS[30]);
-		assertEquals(0.7853981633974483, calculator.getOutput());
-	}
+		testOperation(calculator, "5", "+", "3", "=", "5+3=8");
+		testOperation(calculator, "9", "-", "4", "=", "9-4=5");
+		testOperation(calculator, "6", "×", "7", "=", "6×7=42");
+		testOperation(calculator, "8", "÷", "2", "=", "8÷2=4");
 
-	@Test
-	void testSCOS() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[6]);
-		calculator.selectButton(Calculator.BUTTONS[0]);
-		calculator.selectButton(Calculator.BUTTONS[25]);
-		assertEquals(StrictMath.cos(1.0471975511965976), calculator.getOutput());
-	}
+		testOperation(calculator, "100", "%", "15", "=", "100%15=15");
 
-	@Test
-	void testSCTG() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[4]);
-		calculator.selectButton(Calculator.BUTTONS[5]);
-		calculator.selectButton(Calculator.BUTTONS[27]);
-		assertEquals(1 / StrictMath.tan(0.7853981633974483), calculator.getOutput());
-	}
+		testOperation(calculator, "4", "^", "3", "=", "4^3=64");
+		testOperation(calculator, "9", "√", null, null, "√(9)=3");
+		testOperation(calculator, "5", "^2", null, null, "^2(5)=25");
+		testOperation(calculator, "2", "^3", null, null, "^3(2)=8");
 
-	@Test
-	void testSDIVIDE() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[9]);
-		calculator.selectButton(Calculator.BUTTONS[14]);
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[19]);
-		assertEquals(3, calculator.getOutput());
-	}
+		calculator.selectButton("π");
+		assertEquals("3.141592653589793", calculator.getOutputText());
+		calculator.selectButton("C");
 
-	@Test
-	void testSNUMBER() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[23]);
-		assertEquals(6, calculator.getOutput());
-	}
+		calculator.selectButton("e");
+		assertEquals("2.718281828459045", calculator.getOutputText());
+		calculator.selectButton("C");
 
-	@Test
-	void testSFACTORIAL() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[23]);
-		assertEquals(6, calculator.getOutput());
-	}
+		testOperation(calculator, "30", "sin°", null, null, "sin°(30)=0,5");
+		testOperation(calculator, "60", "cos°", null, null, "cos°(60)=0,5");
+		testOperation(calculator, "45", "tg°", null, null, "tg°(45)=1");
 
-	@Test
-	void testSLOGARITHM() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[2]);
-		calculator.selectButton(Calculator.BUTTONS[5]);
-		calculator.selectButton(Calculator.BUTTONS[22]);
-		calculator.selectButton(Calculator.BUTTONS[5]);
-		calculator.selectButton(Calculator.BUTTONS[19]);
-		assertEquals(2, calculator.getOutput());
-	}
+		testOperation(calculator, "0.5", "arcsin", null, null, "arcsin(0.5)=0,523598775598299");
 
-	@Test
-	void testSMINUS() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[2]);
-		calculator.selectButton(Calculator.BUTTONS[16]);
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[19]);
-		assertEquals(-1, calculator.getOutput());
-	}
+		testOperation(calculator, "100", "lg", null, null, "lg(100)=2");
+		testOperation(calculator, "2.7183", "ln", null, null, "ln(2.7183)=1,000006684913988");
 
-	@Test
-	void testSMULTIPLE() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[2]);
-		calculator.selectButton(Calculator.BUTTONS[15]);
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[19]);
-		assertEquals(6, calculator.getOutput());
-	}
+		testOperation(calculator, "5", "n!", null, null, "n!(5)=120");
+		testOperation(calculator, "7", "n!!", null, null, "n!!(7)=105");
 
-	@Test
-	void testSPERCENT() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[1]);
-		calculator.selectButton(Calculator.BUTTONS[0]);
-		calculator.selectButton(Calculator.BUTTONS[0]);
-		calculator.selectButton(Calculator.BUTTONS[18]);
-		calculator.selectButton(Calculator.BUTTONS[1]);
-		calculator.selectButton(Calculator.BUTTONS[0]);
-		calculator.selectButton(Calculator.BUTTONS[19]);
-		assertEquals(10, calculator.getOutput());
-	}
+		testOperation(calculator, "0", "sh", null, null, "sh(0)=0");
+		testOperation(calculator, "0", "ch", null, null, "ch(0)=1");
 
-	@Test
-	void testSPLUS() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[2]);
-		calculator.selectButton(Calculator.BUTTONS[17]);
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[19]);
-		assertEquals(5, calculator.getOutput());
-	}
+		testOperation(calculator, "2", "10^", null, null, "10^(2)=100");
+		testOperation(calculator, "4", "1/x", null, null, "1/x(4)=0,25");
 
-	@Test
-	void testSPOWER() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[5]);
-		calculator.selectButton(Calculator.BUTTONS[21]);
-		calculator.selectButton(Calculator.BUTTONS[2]);
-		calculator.selectButton(Calculator.BUTTONS[19]);
-		assertEquals(25, calculator.getOutput());
-	}
-
-	@Test
-	void testSSIN() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[0]);
-		calculator.selectButton(Calculator.BUTTONS[24]);
-		assertEquals(StrictMath.sin(0.5235987755982988), calculator.getOutput());
-	}
-
-	@Test
-	void testSSQRT() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[2]);
-		calculator.selectButton(Calculator.BUTTONS[5]);
-		calculator.selectButton(Calculator.BUTTONS[20]);
-		assertEquals(5, calculator.getOutput());
-	}
-
-	@Test
-	void testSTG() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[4]);
-		calculator.selectButton(Calculator.BUTTONS[5]);
-		calculator.selectButton(Calculator.BUTTONS[26]);
-		assertEquals(StrictMath.tan(0.7853981633974483), calculator.getOutput());
-	}
-
-	@Test
-	void testSDOUBLEFACT() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[9]);
-		calculator.selectButton(Calculator.BUTTONS[44]);
-		assertEquals(945, calculator.getOutput());
-	}
-
-	@Test
-	void testSTEN() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[2]);
-		calculator.selectButton(Calculator.BUTTONS[42]);
-		assertEquals(100, calculator.getOutput());
-	}
-
-	@Test
-	void testSLN() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[1]);
-		calculator.selectButton(Calculator.BUTTONS[0]);
-		calculator.selectButton(Calculator.BUTTONS[37]);
-		assertEquals(StrictMath.log(10), calculator.getOutput());
-	}
-
-	@Test
-	void testSLG() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[1]);
-		calculator.selectButton(Calculator.BUTTONS[0]);
-		calculator.selectButton(Calculator.BUTTONS[36]);
-		assertEquals(1, calculator.getOutput());
-	}
-
-	@Test
-	void testSCUBE() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[35]);
-		assertEquals(27, calculator.getOutput());
-	}
-
-	@Test
-	void testSSQUARE() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[34]);
-		assertEquals(9, calculator.getOutput());
-	}
-
-	@Test
-	void testSSH() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[39]);
-		assertEquals((StrictMath.pow(2.7183, 3) - StrictMath.pow(2.7183, -3)) / 2, calculator.getOutput());
-	}
-
-	@Test
-	void testSCH() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[38]);
-		assertEquals((StrictMath.pow(2.7183, 3) + StrictMath.pow(2.7183, -3)) / 2, calculator.getOutput());
-	}
-
-	@Test
-	void testSBACK() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[1]);
-		calculator.selectButton(Calculator.BUTTONS[43]);
-		assertEquals(1, calculator.getOutput());
-	}
-
-	@Test
-	void testSTH() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[0]);
-		calculator.selectButton(Calculator.BUTTONS[40]);
-		assertEquals(0.0 / (StrictMath.pow(2.7183, 0) + StrictMath.pow(2.7183, 0)), calculator.getOutput());
-	}
-
-	@Test
-	void testSCTH() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[41]);
-		assertEquals((StrictMath.pow(2.7183, 3) + StrictMath.pow(2.7183, -3)) / (StrictMath.pow(2.7183, 3) - StrictMath.pow(2.7183, -3)), calculator.getOutput());
-	}
-
-	@Test
-	void testExtended() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[32]);
-		assertEquals(true, calculator.isExtended());
-		calculator.selectButton(Calculator.BUTTONS[32]);
-		assertEquals(false, calculator.isExtended());
-	}
-
-	@Test
-	void testCLEAR() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[3]);
-		calculator.selectButton(Calculator.BUTTONS[13]);
-		assertEquals(0, calculator.getOutput());
-	}
-
-	@Test
-	void testE() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[12]);
-		calculator.selectButton(Calculator.BUTTONS[19]);
-		assertEquals(2.718281828459045, calculator.getOutput());
-	}
-
-	@Test
-	void testP() {
-		calculator = new Calculator();
-		calculator.selectButton(Calculator.BUTTONS[11]);
-		calculator.selectButton(Calculator.BUTTONS[19]);
-		assertEquals(3.141592653589793, calculator.getOutput());
-	}
-
-	@Test
-	@SuppressWarnings("TestMethodWithoutAssertion")
-	void testMain() {
-		Main.main(new String[]{""});
-	}
-
-	private static void assertEquals(double d1, double d2) {
-		var expected = Math.round(d1 * 1.0e9) / 1.0e9;
-		var actual = Math.round(d2 * 1.0e9) / 1.0e9;
-		Assertions.assertEquals(expected, actual);
-	}
-
-	private static void assertEquals(boolean d1, boolean d2) {
-		Assertions.assertEquals(d1, d2);
+		assertFalse(calculator.isExtended());
+		calculator.selectButton("⚙");
+		assertTrue(calculator.isExtended());
+		calculator.selectButton("⚙");
+		assertFalse(calculator.isExtended());
 	}
 }
