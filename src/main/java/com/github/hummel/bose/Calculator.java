@@ -107,7 +107,7 @@ public class Calculator extends JFrame {
 		oneOpFunc.put("th", Operation.TH);
 		oneOpFunc.put("cth", Operation.CTH);
 		oneOpFunc.put("10^", Operation.TEN);
-		oneOpFunc.put("1/x", Operation.BACK);
+		oneOpFunc.put("1/", Operation.BACK);
 
 		twoOpFunc.put("+", Operation.PLUS);
 		twoOpFunc.put("-", Operation.MINUS);

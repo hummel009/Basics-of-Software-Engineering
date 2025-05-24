@@ -59,7 +59,7 @@ class UnitTests {
 		assertEquals("2.718281828459045", calculator.getOutputText());
 		calculator.selectButton("C");
 
-		testOperation(calculator, "4", "1/x", null, null, "1/x(4)=0.25");
+		testOperation(calculator, "4", "1/", null, null, "1/(4)=0.25");
 		testOperation(calculator, "5", "n!", null, null, "n!(5)=120");
 		testOperation(calculator, "7", "n!!", null, null, "n!!(7)=105");
 		testOperation(calculator, "2", "log", "5", "=", "2log5=0.430676558073393");
