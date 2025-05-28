@@ -7,6 +7,18 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Main {
+	/**
+	 * Main method that launches the calculator application.
+	 * Performs the following setup:
+	 * 1. Initializes FlatLaf as the base look and feel
+	 * 2. Applies the GitHub Dark theme from Material Theme UI Lite
+	 * 3. Creates and displays the calculator window
+	 * 4. Handles any initialization errors by printing stack traces
+	 * <p>
+	 * The application runs on the AWT Event Dispatch Thread for thread safety.
+	 *
+	 * @param arg Command-line arguments (not used)
+	 */
 	public static void main(String[] arg) {
 		FlatLightLaf.setup();
 		EventQueue.invokeLater(() -> {

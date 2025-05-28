@@ -37,10 +37,13 @@ application {
 tasks {
 	test {
 		useJUnitPlatform()
+		finalizedBy(jacocoTestReport)
 	}
 	jacocoTestReport {
+		dependsOn(test)
 		reports {
 			xml.required = true
+			html.required = true
 		}
 	}
 	jar {
