@@ -15,11 +15,11 @@ val embed: Configuration by configurations.creating
 dependencies {
 	embed("com.formdev:flatlaf:latest.release")
 	embed("com.formdev:flatlaf-intellij-themes:latest.release")
+
 	implementation("com.formdev:flatlaf:latest.release")
 	implementation("com.formdev:flatlaf-intellij-themes:latest.release")
 
-	val junitBom = platform("org.junit:junit-bom:latest.release")
-	testImplementation(junitBom)
+	testImplementation(platform("org.junit:junit-bom:latest.release"))
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
